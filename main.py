@@ -19,15 +19,15 @@ green = (0, 255, 0)
 
 """Snake properties"""
 snake_size = 10
-snake_speed = 20
+snake_speed = 10
 snake_list = []
 clock = game.time.Clock()
 score_font = game.font.SysFont("comicsansms", 35)
 
 """Score"""
-def Your_score(score):
-    value = score_font.render("Your Score: " + str(score), True, blue)
-    display.blit(value, [0, 0])
+def message(text,score,x,y):
+    value = score_font.render(str(text) + str(score), True, blue)
+    display.blit(value, [x, y])
 
 
 
@@ -42,6 +42,7 @@ def snake(snake_list,snake_size,Length_of_snake):
 def Gameloop():
     """Game"""
     game_over = True
+    game_close = False
     snake_x1 = display_width // 2
     snake_y1 = display_height // 2
 
@@ -52,6 +53,20 @@ def Gameloop():
     food_y = round(random.randrange(0, display_height - 100) / 10.0) * 10.0
     Length_of_snake = 1
     while game_over:
+
+        while game_close == True:
+            message("You Lost! Press C-Play Again or Q-Quit : ",Length_of_snake-1,display_width//5,display_height//2)
+            game.display.update()
+
+            for event in game.event.get():
+                if event.type == game.KEYDOWN:
+                    if event.key == game.K_q:
+                        game_over = False
+                        game_close = False
+                    if event.key == game.K_c:
+                        Gameloop()
+
+
         for event in game.event.get():
             if event.type == game.QUIT:
                 game_over = False
@@ -70,7 +85,7 @@ def Gameloop():
                     snake_x2_change = 0
                     snake_y2_change = +10
         if snake_x1 < 0 or snake_x1 >= display_width or snake_y1 < 0 or snake_y1 >= display_height:
-            game_over = False
+            game_close = True
 
         snake_x1 += snake_x2_change
         snake_y1 += snake_y2_change
@@ -82,7 +97,7 @@ def Gameloop():
         snake_list.append(snake_Head)
         """snake function"""
         snake(snake_list,snake_size,Length_of_snake)
-        Your_score(Length_of_snake-1)
+        message("Your Score : ",Length_of_snake-1,0,0)
         game.draw.rect(display,yellow,[food_x,food_y,snake_size,snake_size])
         game.display.update()
         if snake_x1 == food_x and snake_y1 == food_y:
